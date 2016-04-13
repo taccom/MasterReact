@@ -5,16 +5,43 @@
         <title>Hello React</title>  
         <script src="https://fb.me/react-with-addons-0.14.0.js"> </script> 
         <script src="https://fb.me/react-dom-0.14.0.js"> </script>
-        <script src="http://fb.me/JSXTransformer-0.13.1.js"></script>  
+        <script src="http://fb.me/JSXTransformer-0.13.1.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">  
     </head>  
     <body>  
     <div id="view"/>
     <script type="text/jsx">  
         var HelloMessage = React.createClass({
+            componentWillMount: function () {
+                console.log('componentWillMount');
+            },
+            componentDidMount: function() {
+                console.log('componentDidMount');
+            },
+            componentWillUnmount: function () {
+                console.log('componentWillUnmount');
+            },
             render: function () {
+                console.log('render');
                 return <h2>{ this.props.message }</h2>;
             }
         });
+        
+        var Button = React.createClass({
+            render: function () {
+                return (
+                    <button onClick={ this.props.onClick }> {this.props.children} </button>
+                );
+            }
+        });
+        
+        var GlyphIcon = React.createClass({
+            render: function () {
+                return (
+                    <span className={ 'glyphicon glyphicon-' + this.props.icon }/>
+                );
+            }
+        });        
         
         var TextBox = React.createClass({
             getInitialState: function () {
@@ -32,12 +59,12 @@
             render: function () {
                 return (
                     <div>
-                        { this.props.label } <br/>
+                        { this.props.label }<br/>
                         <input type='text' ref='messageTextBox' disabled={ !this.state.isEditing }/>
                         {
                             this.state.isEditing ?
-                            <button onClick={ this.update }>Update</button>:
-                            <button onClick={ this.edit }>Edit</button>
+                            <Button onClick={ this.update }><GlyphIcon icon='ok'/>Update</Button>:
+                            <Button onClick={ this.edit }><GlyphIcon icon='pencil'/>Edit</Button>
                         }
                     </div>
                 );
@@ -53,12 +80,19 @@
                 newState[key] = value;
                 this.setState(newState);
             },
+            reload: function () {
+                ReactDOM.unmountComponentAtNode(document.getElementById('view'));
+                ReactDOM.render(
+                    <HelloReact/>,
+                    document.getElementById('view'));
+            },
             render: function () {
                 return (
                     <div>
                         <HelloMessage message={ 'Hello ' + this.state.firstName + ' ' + this.state.lastName }/>
                         <TextBox label='First Name' onUpdate={ this.update.bind(this, 'firstName') }/>
                         <TextBox label='Last Name' onUpdate={ this.update.bind(this, 'lastName') }/>
+                        <button onClick={ this.reload }>Reload</button>
                     </div>
                 );
             }
